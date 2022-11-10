@@ -1,0 +1,38 @@
+server:
+  port: 8802
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://192.168.115.237:8923/ffcs_hotel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+    username: hotel_dev
+    password: ffcsHotel@0808
+    driverClassName: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+secure:
+  ignore:
+    webUrls: #配置静态白名单路径
+      - "/**/*.js"
+      - "/lang/*.json"
+      - "/**/*.css"
+      - "/**/*.js"
+      - "/**/*.png"
+      - "/"
+    apiUrls:
+      - "/rsa/publicKey"
+      - "/login"
+      - "/oauth/logout"
+      - "/captchaImage"
+login:
+  resetPwdTimeoutDay: 90
