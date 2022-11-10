@@ -1,0 +1,174 @@
+server:
+  port: 8801
+spring:
+  cloud:
+    discovery:
+      locator:
+        enabled: true             #开启服务注册和发现的功能
+        lowerCaseServiceId: true  #将请求路径上的服务名配置为小写
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allow-credentials: true   # 允许携带认证信息
+            allowed-origins: "*"      # 允许跨域的源(网站域名/ip)，设置*为全部
+            allowed-headers: "*"      # 允许跨域请求里的head字段，设置*为全部
+            allowed-methods:          # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
+            - GET
+            - POST
+      routes:                         #配置路由路径
+        - id: systemServer         #路由的ID
+          uri: lb://systemServer   #匹配后路由地址
+          predicates:                 # 断言，路径相匹配的进行路由
+            - Path=/systemServer/**
+          filters:                    # 过滤器
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: oauth2Server
+          uri: lb://oauth2Server
+          predicates:
+            - Path=/oauth2Server/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: orderServer
+          uri: lb://orderServer
+          predicates:
+            - Path=/orderServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback  
+        - id: terminalServer
+          uri: lb://terminalServer
+          predicates:
+            - Path=/terminalServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: templateServer
+          uri: lb://templateServer
+          predicates:
+            - Path=/templateServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: gateServer
+          uri: lb://gateServer
+          predicates:
+            - Path=/gateServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: bnetServer
+          uri: lb://bnetServer
+          predicates:
+            - Path=/bnetServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: smsServer
+          uri: lb://smsServer
+          predicates:
+            - Path=/smsServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: yjzhServer
+          uri: lb://yjzhServer
+          predicates:
+            - Path=/yjzhServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: taskServer
+          uri: lb://taskServer
+          predicates:
+            - Path=/taskServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback
+        - id: wxServer
+          uri: lb://wxServer
+          predicates:
+            - Path=/wxServer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback  #fallback时调用的方法 http://localhost:8000/fallback 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:8802/rsa/publicKey' #配置RSA的公钥访问地址
+# hystrix 信号量隔离，15秒后自动超时
+hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 15000
+secure:
+  ignore:
+    urls: #配置白名单路径
+      - "/actuator/**"
+      - "/oauth2Server/oauth/token"
+      - "/oauth2Server/oauth/authorize"
+      - "/oauth2Server/captchaImage"
+      - "/doc.html"
+      - "/swagger-ui.html"
+      - "/**/v2/**"
+      - "/swagger-resources/**"
+      - "/webjars/**"
+      - "/gateServer/syhotel/**"
+      - "/bnetServer/notify/**"
+      - "/bnetServer/bnetAreaConfig/**"
+      - "/terminalServer/itv/**"
+      - "/**/itv/**"
+      - "/smsServer/smsCallbackLog/notify"
+      - "/yjzhServer/**"
+      - "/taskServer/taskTest/test"
+      - "/taskServer/deviceActive/process"
+      - "/wxServer/templateMsg/sendMessage"
+      - "/wxServer/**"
+      - "/systemServer/account/resetPwdByVerifiCode"
+      - "/terminalServer/terminal/updateSnByDeviceCode"
+    commonApiUrls:
+      - "/systemServer/account/getInfoDetail"
+      - "/systemServer/menu/getLoginUserMenuAndBtn"
+      - "/systemServer/dict/**"
+      - "/systemServer/paramConfig/**"
+      - "/systemServer/enums/**"
+
+login:
+  path: /oauth2Server/oauth/token
+  client:
+    salt: hotel
+api:
+  expire: 180000
