@@ -172,3 +172,13 @@ login:
     salt: hotel
 api:
   expire: 180000
+ctgCache:
+  type: hosts
+  url: 192.168.115.112:31078,192.168.115.113:31078
+  instanceName: cxcache01
+  password: FfcsCloud@2022
+  pool:
+    config:
+      maxTotal: 10
+      maxIdle: 10
+      minIdle: 3
